@@ -8,6 +8,19 @@ import (
 
 // TestCostCalculation tests the Cost() method of ObjectSpec.
 func TestCostCalculation(t *testing.T) {
+	// create a config including sample material for testing
+	config := Config{
+		LaborRate:   10.00,
+		MachineRate: 0.50,
+		Materials: map[string]Material{
+			"TestMaterial": {
+				Name:        "TestMaterial",
+				CostPerGram: 0.10,
+				Density:     1.0,
+			},
+		},
+	}
+
 	// Create a sample material for testing.
 	mat := Material{
 		Name:        "TestMaterial",
@@ -64,7 +77,7 @@ func TestCostCalculation(t *testing.T) {
 	// Run each test case.
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			actual := tc.object.Cost(tc.machineCostPerHour, tc.laborCostPerHour)
+			actual := tc.object.Cost(config)
 			if actual != tc.expectedCost {
 				t.Errorf("expected cost %f but got %f", tc.expectedCost, actual)
 			}
@@ -74,11 +87,15 @@ func TestCostCalculation(t *testing.T) {
 
 // TestLoadMaterials tests the LoadMaterials function which reads materials from a JSON file.
 func TestLoadMaterials(t *testing.T) {
-	// Sample JSON data representing two materials.
-	data := `[
-		{"name": "PLA", "costPerGram": 0.10, "density": 1.24},
-		{"name": "ABS", "costPerGram": 0.12, "density": 1.04}
-	]`
+	// Sample JSON data representing a config with two materials.
+	data := `{
+		"laborRate": 10.00,
+		"machineRate": 0.50,
+		"materials": {
+			"PLA": {"name": "PLA", "costPerGram": 0.10, "density": 1.24},
+			"ABS": {"name": "ABS", "costPerGram": 0.12, "density": 1.04}
+		}
+	}`
 
 	// Create a temporary file to hold the JSON data.
 	tmpfile, err := ioutil.TempFile("", "materials_*.json")
@@ -95,21 +112,21 @@ func TestLoadMaterials(t *testing.T) {
 	tmpfile.Close()
 
 	// Load materials using the temporary JSON file.
-	materials, err := LoadMaterials(tmpfile.Name())
+	config, err := LoadConfig(tmpfile.Name())
 	if err != nil {
-		t.Fatalf("LoadMaterials returned error: %v", err)
+		t.Fatalf("LoadConfig returned error: %v", err)
 	}
 
 	// Check that we loaded exactly two materials.
-	if len(materials) != 2 {
-		t.Errorf("expected 2 materials, got %d", len(materials))
+	if len(config.Materials) != 2 {
+		t.Errorf("expected 2 materials, got %d", len(config.Materials))
 	}
 
 	// Verify that both "PLA" and "ABS" are present.
-	if _, ok := materials["PLA"]; !ok {
+	if _, ok := config.Materials["PLA"]; !ok {
 		t.Error("expected material PLA to be loaded")
 	}
-	if _, ok := materials["ABS"]; !ok {
+	if _, ok := config.Materials["ABS"]; !ok {
 		t.Error("expected material ABS to be loaded")
 	}
 }

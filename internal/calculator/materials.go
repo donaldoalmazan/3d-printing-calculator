@@ -12,20 +12,23 @@ type Material struct {
 	Density     float64 `json:"density"`
 }
 
-// LoadMaterials reads materials from a JSON file and returns a map for easy lookup.
-func LoadMaterials(filepath string) (map[string]Material, error) {
+// Config holds configuration for the calculator.
+type Config struct {
+	LaborRate   float64             `json:"laborRate"`
+	MachineRate float64             `json:"machineRate"`
+	Materials   map[string]Material `json:"materials"`
+}
+
+// LoadConfig reads materials from a JSON file and returns a map for easy lookup.
+func LoadConfig(filepath string) (config Config, err error) {
 	data, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return nil, err
+		return
 	}
-	var materials []Material
-	if err := json.Unmarshal(data, &materials); err != nil {
-		return nil, err
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		return
 	}
 
-	matMap := make(map[string]Material)
-	for _, mat := range materials {
-		matMap[mat.Name] = mat
-	}
-	return matMap, nil
+	return
 }

@@ -9,9 +9,9 @@ type ObjectSpec struct {
 
 // Cost calculates the total production cost for the object.
 // It takes machine and labor costs per hour as parameters.
-func (spec ObjectSpec) Cost(machineCostPerHour, laborCostPerHour float64) float64 {
+func (spec ObjectSpec) Cost(config Config) float64 {
 	materialCost := spec.Weight * spec.Material.CostPerGram
-	machineCost := spec.PrintTime * machineCostPerHour
-	laborCost := spec.PrintTime * laborCostPerHour
+	machineCost := spec.PrintTime * config.MachineRate
+	laborCost := spec.PrintTime * config.LaborRate
 	return materialCost + machineCost + laborCost
 }
