@@ -10,6 +10,8 @@ import (
 	"strings"
 
 	"local/3d-printing-calculator/internal/calculator"
+
+	. "github.com/stevegt/goadapt"
 )
 
 func main() {
@@ -40,16 +42,21 @@ func main() {
 	}
 
 	// Load available materials from JSON file.
-	// Since materials.json is in the project root, use a relative path.
-	materialsPath := filepath.Join("materials.json")
-	materials, err := calculator.LoadMaterials(materialsPath)
-	if err != nil {
-		log.Fatalf("Failed to load materials: %v", err)
-	}
+	// Since config.json is in the project root, use a relative path.
+	configPath := filepath.Join("config.json")
+	config, err := calculator.LoadConfig(configPath)
+	// demo of the goadapt Ck() function
+	Ck(err)
+	// instead of:
+	/*
+		if err != nil {
+			log.Fatalf("Failed to load config: %v", err)
+		}
+	*/
 
 	// Display available materials.
 	fmt.Println("Available materials:")
-	for name := range materials {
+	for name := range config.Materials {
 		fmt.Println(" -", name)
 	}
 
@@ -60,7 +67,7 @@ func main() {
 		log.Fatalf("Error reading material: %v", err)
 	}
 	materialInput = strings.TrimSpace(materialInput)
-	selectedMaterial, exists := materials[materialInput]
+	selectedMaterial, exists := config.Materials[materialInput]
 	if !exists {
 		log.Fatalf("Material '%s' not found.", materialInput)
 	}
@@ -72,11 +79,7 @@ func main() {
 		Material:  selectedMaterial,
 	}
 
-	// Define additional cost factors.
-	machineCostPerHour := 0.50
-	laborCostPerHour := 10.00
-
 	// Calculate the total cost.
-	totalCost := object.Cost(machineCostPerHour, laborCostPerHour)
+	totalCost := object.Cost(config)
 	fmt.Printf("\nTotal cost to print the object using %s: $%.2f\n", selectedMaterial.Name, totalCost)
 }
