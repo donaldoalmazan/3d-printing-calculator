@@ -58,30 +58,32 @@ func main() {
 
 	// Find matching materials based on the abbreviation
 	abbrev := strings.ToLower(*materialFlag)
-	var matches []calculator.Material
-	for _, material := range config.Materials {
-		if strings.HasPrefix(strings.ToLower(material.Name), abbrev) {
-			matches = append(matches, material)
+	var matchingKeys []string
+	for key := range config.Materials {
+		if strings.HasPrefix(strings.ToLower(key), abbrev) {
+			matchingKeys = append(matchingKeys, key)
 		}
 	}
 
-	if len(matches) == 0 {
-		fmt.Println("No materials found matching abbreviation:", *materialFlag)
+	if len(matchingKeys) == 0 {
+		fmt.Printf("No materials found matching abbreviation: %s\n", *materialFlag)
 		fmt.Println("Available materials:")
-		for name := range config.Materials {
-			fmt.Println(" -", name)
+		for key, material := range config.Materials {
+			fmt.Printf(" - %s: %s\n", key, material.Name)
 		}
 		os.Exit(1)
-	} else if len(matches) > 1 {
-		fmt.Println("Multiple materials match the abbreviation:", *materialFlag)
+	} else if len(matchingKeys) > 1 {
+		fmt.Printf("Multiple materials match the abbreviation: %s\n", *materialFlag)
 		fmt.Println("Matching materials:")
-		for _, material := range matches {
-			fmt.Println(" -", material.Name)
+		for _, key := range matchingKeys {
+			material := config.Materials[key]
+			fmt.Printf(" - %s: %s\n", key, material.Name)
 		}
 		os.Exit(1)
 	}
 
-	selectedMaterial := matches[0]
+	selectedKey := matchingKeys[0]
+	selectedMaterial := config.Materials[selectedKey]
 
 	// Create object specification using user inputs.
 	object := calculator.ObjectSpec{
