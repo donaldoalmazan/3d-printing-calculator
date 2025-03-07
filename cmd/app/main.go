@@ -18,10 +18,16 @@ import (
 func main() {
 	// Define the -t flag for print time in "HH:MM" format
 	printTimeFlag := flag.String("t", "", "Estimated print time (format HH:MM)")
+	// Define the -w flag for weight in grams
+	weightFlag := flag.Float64("w", 0, "Estimated weight (grams)")
 	flag.Parse()
 
 	if *printTimeFlag == "" {
 		log.Fatalf("Print time flag -t is required. Example usage: -t \"02:30\"")
+	}
+
+	if *weightFlag <= 0 {
+		log.Fatalf("Weight flag -w is required and must be a positive number. Example usage: -w 50.0")
 	}
 
 	// Parse the print time from "HH:MM" to float64 hours
@@ -30,19 +36,7 @@ func main() {
 		log.Fatalf("Invalid print time format: %v. Expected format HH:MM", err)
 	}
 
-	reader := bufio.NewReader(os.Stdin)
-
-	// Prompt for weight
-	fmt.Print("Enter estimated weight (grams): ")
-	weightInput, err := reader.ReadString('\n')
-	if err != nil {
-		log.Fatalf("Error reading weight: %v", err)
-	}
-	weightInput = strings.TrimSpace(weightInput)
-	weight, err := strconv.ParseFloat(weightInput, 64)
-	if err != nil {
-		log.Fatalf("Invalid weight input: %v", err)
-	}
+	weight := *weightFlag
 
 	// Load available materials from JSON file.
 	// Since config.json is in the project root, use a relative path.
@@ -64,6 +58,7 @@ func main() {
 	}
 
 	// Prompt for material selection.
+	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter material name: ")
 	materialInput, err := reader.ReadString('\n')
 	if err != nil {

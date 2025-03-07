@@ -1,6 +1,6 @@
-Replace time input prompt with -t flag
+Replace weight input prompt with -w flag
 
-Replace the existing time input prompt with a -t flag. The -t flag should accept a time in the format "HH:MM" and should be used to set the time for the program.
+Replace the existing weight input prompt with a -w flag that accepts a positive float64 value. The flag should be added to the command line interface of the application.
 
 Sysmsg: 
     You are an expert Go programmer. Please make the requested changes to the given code or documentation.
