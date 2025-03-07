@@ -1,3 +1,5 @@
+File: /Users/donaldo/Github/3d-printing-calculator/cmd/app/main.go
+```go
 package main
 
 import (
@@ -110,3 +112,5 @@ func parseTime(timeStr string) (float64, error) {
 
 	return float64(hours) + float64(minutes)/60.0, nil
 }
+```
+EOF_/Users/donaldo/Github/3d-printing-calculator/cmd/app/main.go

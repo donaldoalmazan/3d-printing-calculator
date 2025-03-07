@@ -1,5 +1,13 @@
-grok init
+Replace time input prompt with -t flag
 
-Sysmsg: You are an expert Go programmer. Please make the requested changes to the given code or documentation.
-In: .DS_Store .lock README.md cmd/.DS_Store cmd/app/main.go config.json internal/.DS_Store internal/calculator/calculator.go internal/calculator/calculator_test.go internal/calculator/materials.go
-Out: .DS_Store .lock README.md cmd/.DS_Store cmd/app/main.go config.json internal/.DS_Store internal/calculator/calculator.go internal/calculator/calculator_test.go internal/calculator/materials.go
+Replace the existing time input prompt with a -t flag. The -t flag should accept a time in the format "HH:MM" and should be used to set the time for the program.
+
+Sysmsg: 
+    You are an expert Go programmer. Please make the requested changes to the given code or documentation.
+In: 
+    cmd/app/main.go config.json
+    internal/calculator/calculator.go
+    internal/calculator/calculator_test.go
+    internal/calculator/materials.go
+Out:
+    cmd/app/main.go
