@@ -11,6 +11,7 @@ import (
 
 	"local/3d-printing-calculator/internal/calculator"
 
+	"github.com/sahilm/fuzzy"
 	. "github.com/stevegt/goadapt"
 )
 
@@ -56,32 +57,39 @@ func main() {
 		}
 	*/
 
-	// Find matching materials based on the abbreviation
+	// Fuzzy match the abbreviation against available materials
 	abbrev := strings.ToLower(*materialFlag)
-	var matches []calculator.Material
+
+	var materialNames []string
+	var materialNamesLower []string
 	for _, material := range config.Materials {
-		if strings.HasPrefix(strings.ToLower(material.Name), abbrev) {
-			matches = append(matches, material)
-		}
+		materialNames = append(materialNames, material.Name)
+		materialNamesLower = append(materialNamesLower, strings.ToLower(material.Name))
 	}
+
+	matches := fuzzy.Find(abbrev, materialNamesLower)
 
 	if len(matches) == 0 {
 		fmt.Println("No materials found matching abbreviation:", *materialFlag)
 		fmt.Println("Available materials:")
-		for name := range config.Materials {
+		for _, name := range materialNames {
 			fmt.Println(" -", name)
 		}
 		os.Exit(1)
 	} else if len(matches) > 1 {
 		fmt.Println("Multiple materials match the abbreviation:", *materialFlag)
 		fmt.Println("Matching materials:")
-		for _, material := range matches {
-			fmt.Println(" -", material.Name)
+		for _, match := range matches {
+			fmt.Println(" -", materialNames[match.Index])
 		}
 		os.Exit(1)
 	}
 
-	selectedMaterial := matches[0]
+	selectedMaterialName := materialNames[matches[0].Index]
+	selectedMaterial, ok := config.Materials[selectedMaterialName]
+	if !ok {
+		log.Fatalf("Material not found: %s", selectedMaterialName)
+	}
 
 	// Create object specification using user inputs.
 	object := calculator.ObjectSpec{

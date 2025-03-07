@@ -2,6 +2,8 @@ Replace material input prompt with -m flag
 
 Replace the existing material input prompt with a -m flag that accepts a material abbreviation. The abbreviation should be matched against the materials map in the config.json file. If the material is not found, print a list of available materials and exit with an error message. The abbreviation should be case-insensitive. If multiple materials match the abbreviation, print a list of matching materials and exit with an error message.
 
+Abbreviations should be fuzzy matched using "github.com/sahilm/fuzzy". For example, "al" and "ui" should match "aluminum". Another example is "st" and "tel" should match "steel". If the abbreviation is ambiguous, print a list of matching materials and exit with an error message.
+
 Sysmsg: 
     You are an expert Go programmer. Please make the requested changes to the given code or documentation.
 In: 
